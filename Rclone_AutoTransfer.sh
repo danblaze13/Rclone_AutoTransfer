@@ -22,19 +22,33 @@ log_file="" # 示例 /path/rclone_script.log 确保这个路径是存在的
 backup() {
   local source=$1
   local target=$2
+  local info_message="从 $source 到 $target"
 
-  send_telegram "🚀开始备份从 $source 到 $target"
-  echo "开始备份从 $source 到 $target" >> $log_file
+  # 记录备份开始时间
+  local start_time=$(date +%Y%m%d%H%M%S)
+  echo "[${start_time}] 开始备份 $info_message" >> $log_file
+  send_telegram "🚀开始备份 $info_message"
 
-  # 执行备份操作
-  rclone copy "$source" "$target" --bwlimit "$SPEED" --max-transfer "$DAILY_LIMIT" -v --progress --drive-chunk-size=128M --buffer-size=128M --transfers 8
+  # 检查源和目标是否一致
+  DIFF=$(rclone check "$source" "$target" --quiet)
+  if [ -z "$DIFF" ]; then
+    echo "[${start_time}] 源和目标一致，无需备份 $info_message" >> $log_file
+    send_telegram "✅源和目标一致，无需备份 $info_message"
+    return 0
+  fi
 
+  # 执行备份操作并获取传输的数据量
+  transfer_info=$(rclone copy "$source" "$target" --bwlimit "$SPEED" --max-transfer "$DAILY_LIMIT" -v --progress --drive-chunk-size=128M --buffer-size=128M --transfers 8 | tee -a $log_file | grep 'Transferred:')
+
+  # 记录备份结束时间
+  local end_time=$(date +%Y%m%d%H%M%S)
+  
   if [ $? -eq 0 ]; then
-    send_telegram "✅备份完成从 $source 到 $target"
-    echo "备份完成从 $source 到 $target" >> $log_file
+    echo "[${end_time}] 备份完成 $info_message\n$transfer_info" >> $log_file
+    send_telegram "✅备份完成 $info_message\n$transfer_info"
   else
-    send_telegram "❌备份失败从 $source 到 $target，请检查日志以获取更多信息。"
-    echo "备份失败从 $source 到 $target" >> $log_file
+    echo "[${end_time}] 备份失败 $info_message" >> $log_file
+    send_telegram "❌备份失败 $info_message，请检查日志以获取更多信息。"
   fi
 }
 
@@ -49,17 +63,14 @@ trap 'close_script' SIGTERM
 
 # 关闭脚本
 close_script() {
-  echo "关闭脚本..."
+  local end_time=$(date +%Y%m%d%H%M%S)
+  echo "[${end_time}] 关闭脚本..." >> $log_file
+  send_telegram "🚀脚本已关闭"
   pkill -f "$process_name"
   sleep 5
   exit 0
 }
 
-# 执行备份操作
+# 开始执行备份操作
+echo "[$(date +%Y%m%d%H%M%S)] 执行备份操作..." >> $log_file
 backup "$source" "$target"
-
-# 当触发当日备份限额时，发送通知
-if [ $? -eq 100 ]; then
-  send_telegram "⛔当日备份限额已达到，备份已停止。等待下次备份开始。"
-  echo "当日备份限额已达到，备份已停止。等待下次备份开始。" >> $log_file
-fi
