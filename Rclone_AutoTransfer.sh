@@ -4,8 +4,8 @@
 process_name="Rclone_AutoTransfer"
 
 # 定义源路径和目标路径
-source="" Example “GD:”
-target="" Example“DP:"
+source="" # Example “GD:”
+target="" # Example“DP:"
 
 # 传输速度和每日传输限额
 SPEED="" # Example"100M"
