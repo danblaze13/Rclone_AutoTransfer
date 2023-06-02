@@ -12,9 +12,9 @@ Rclone AutoTransfer 是一个基于 rclone 的多云备份脚本，旨在提供�
 
 ## 🚀 开始使用
 
-1. 打开 `autoTransfer.sh` 脚本文件，并在文件顶部配置你的备份参数（源路径、目标路径、传输速度、每日传输限额、电报机器人 API 和聊天 ID、日志目录等）。
-2. 保存脚本并确保有执行权限（`chmod +x autoTransfer.sh`）。
-3. 运行 `autoTransfer.sh` 脚本开始备份任务：`./autoTransfer.sh`。
+1. 打开 `Rclone_AutoTransfer.sh` 脚本文件，并在文件顶部配置你的备份参数（源路径、目标路径、传输速度、每日传输限额、电报机器人 API 和聊天 ID、日志目录等）。
+2. 保存脚本并确保有执行权限（`chmod +x Rclone_AutoTransfer.sh`）。
+3. 运行 `Rclone_AutoTransfer.sh` 脚本开始备份任务：`./Rclone_AutoTransfer.sh`。
 4. （可选）如果需要定时执行任务，请按照以下的指引设置。
 
 **请注意：** 在使用脚本之前，请确保已正确配置并安装了 rclone 工具，并且已经完成了云存储服务的挂载。
@@ -26,9 +26,9 @@ Rclone AutoTransfer 是一个基于 rclone 的多云备份脚本，旨在提供�
 1. 在命令行中，输入 `crontab -e` 打开 cron 配置文件。
 2. 在新的一行中，添加你的定时任务。例如，如果你希望每天凌晨2点执行备份任务，可以添加以下行：
     ```
-    0 2 * * * /path/to/script/autoTransfer.sh
+    0 2 * * * /path/to/script/Rclone_AutoTransfer.sh
     ```
-   请将 `/path/to/script/` 替换为 `autoTransfer.sh` 脚本文件的实际路径。
+   请将 `/path/to/script/` 替换为 `Rclone_AutoTransfer.sh` 脚本文件的实际路径。
 3. 保存并关闭配置文件。
 
 现在，Rclone AutoTransfer 脚本将按照你的定时任务设置自动执行。
