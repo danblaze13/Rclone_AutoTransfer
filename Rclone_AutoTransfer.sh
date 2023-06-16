@@ -18,9 +18,6 @@ telegram_chat_id="telegram_chat_id"
 # 日志文件目录
 log_dir="/path/to/log" # 示例 /path/to/log
 
-# 启动 rclone rc 服务
-rclone rcd --rc-no-auth &
-
 # 获取 rclone rc 服务的进程ID
 rcd_pid=$!
 
@@ -84,6 +81,7 @@ update_telegram() {
   curl -s -X POST https://api.telegram.org/bot$telegram_bot_token/editMessageText -d chat_id=$telegram_chat_id -d message_id="$message_id" -d text="$message" > /dev/null
 }
 
+# 统计传输的数据量
 get_transferred_data() {
   local response=$(rclone rc --rc-addr :5573 core/stats)
   local transferred=$(echo "$response" | jq -r '.bytes')
